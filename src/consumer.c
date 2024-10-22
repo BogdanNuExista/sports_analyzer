@@ -35,9 +35,6 @@ void* consumer_thread(void* arg) {
             case 1:
                 find_max_points(buffer, filename, data);
                 break;
-            case 2:
-                //print_ppa_and_max_points(buffer);
-                break;
         }
 
 

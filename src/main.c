@@ -6,7 +6,7 @@
 #include "../include/utils.h"
 
 #define NUM_PRODUCERS 1
-#define NUM_CONSUMERS 3
+#define NUM_CONSUMERS 2
 #define BUFFER_SIZE 1000
 
 int main() {
@@ -36,18 +36,9 @@ int main() {
     for (int i = 0; i < NUM_PRODUCERS; i++) {
         pthread_join(producers[i], NULL);
     }
-    for (int i = 0; i < NUM_CONSUMERS-1; i++) {
+    for (int i = 0; i < NUM_CONSUMERS; i++) {
         pthread_join(consumers[i], NULL);
     }
-
-    // Now the 3rd thread for the report
-
-    // ConsumerArgs* args = malloc(sizeof(ConsumerArgs));
-    // args->buffer = &buffer;
-    // args->consumer_id = 2;
-    // pthread_create(&consumers[2], NULL, consumer_thread, args);
-
-    // pthread_join(consumers[2], NULL);
 
     // Clean up
     destroy_buffer(&buffer);
