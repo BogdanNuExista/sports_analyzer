@@ -190,6 +190,8 @@ void* producer_thread(void* arg) {
     
     printf("Producer %d finished processing all CSV files.\n", producer_id);
 
+    buffer->all_data_processed=true;
+
     free(arg);
     return NULL;
 }

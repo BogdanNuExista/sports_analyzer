@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/consumer.h"
 #include "../include/utils.h"
+#include <pthread.h>  
 
 void* consumer_thread(void* arg) {
     ConsumerArgs* args = (ConsumerArgs*)arg;

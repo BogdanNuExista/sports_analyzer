@@ -36,7 +36,7 @@ int main() {
     for (int i = 0; i < NUM_PRODUCERS; i++) {
         pthread_join(producers[i], NULL);
     }
-    for (int i = 0; i < NUM_CONSUMERS; i++) {
+    for (int i = 0; i < NUM_CONSUMERS-1; i++) {
         pthread_join(consumers[i], NULL);
     }
 
