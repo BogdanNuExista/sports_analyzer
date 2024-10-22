@@ -4,6 +4,8 @@
 #include "../include/consumer.h"
 #include "../include/utils.h"
 
+Player player_max;
+
 void* consumer_thread(void* arg) {
     ConsumerArgs* args = (ConsumerArgs*)arg;
     SharedBuffer* buffer = args->buffer;
@@ -26,7 +28,7 @@ void* consumer_thread(void* arg) {
         pthread_cond_signal(&buffer->not_full);
         pthread_mutex_unlock(&buffer->mutex);
 
-        // Process data based on consumer_id
+
         switch (consumer_id) {
             case 0:
                 calculate_ppa(buffer, filename, data);
@@ -34,17 +36,58 @@ void* consumer_thread(void* arg) {
             case 1:
                 find_max_points(buffer, filename, data);
                 break;
-            case 2:
-                generate_report(data);
-                break;
         }
+
+
+
+
+        // Wait for football data to be processed if needed
+        // if (consumer_id == 1) {
+        //     pthread_mutex_lock(&buffer->mutex);
+        //     pthread_cond_wait(&buffer->football_done, &buffer->mutex);  // Wait for the football signal
+        //     printf("Player with max points at football: %s %s, Points: %d\n",
+        //         player_max.name_first,
+        //         player_max.name_last,
+        //         player_max.points);     
+        //     pthread_mutex_unlock(&buffer->mutex);
+
+        //     pthread_mutex_lock(&buffer->mutex);
+        //     pthread_cond_wait(&buffer->tennis_done, &buffer->mutex);  // Wait for the tennis signal
+        //     printf("Player with max points at tennis: %s %s, Points: %d\n",
+        //         player_max.name_first,
+        //         player_max.name_last,
+        //         player_max.points); 
+        //     pthread_mutex_unlock(&buffer->mutex);
+        // }
     }
 
     free(arg);
     return NULL;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////////////////////////////// HELPER FUNCTIONS ////////////////////////////////////////////////////////////
+
+void print_buffer_players(SharedBuffer *buffer) {
+    for (int i = 0; i < 10; i++) {
+        printf("Player: %s %s and PPA: %f\n", buffer->players[i].name_first, buffer->players[i].name_last, buffer->players[i].ppa);
+    }
+}
+
 
 int find_player_by_name(Player *players, int player_count, char* name) {
     for (int i = 0; i < player_count; i++) {
@@ -157,10 +200,13 @@ void calculate_ppa_for_football(SharedBuffer *buffer, char* filename, char* data
     if (find_winner != -1 && find_loser != -1) {
         buffer->players[find_winner].ppa += wPPA - lPPA;
         buffer->players[find_loser].ppa += lPPA - wPPA;
+        //printf("PPA: %f\n", buffer->players[find_winner].ppa);
         //printf("OMG PLAYER FOUND IN BUFFER\n");
     } else {
         printf("Warning: Player not found. Winner: %s, Loser: %s\n", winner_name, loser_name);
     }
+
+    // can use fprintf to write the ppa for each player to a file
 }
 
 void calculate_ppa_for_tennis(SharedBuffer *buffer, char* filename, char* data) {
@@ -248,6 +294,7 @@ void calculate_ppa_for_tennis(SharedBuffer *buffer, char* filename, char* data) 
         buffer->players[find_winner].ppa += wPPA - lPPA;
         buffer->players[find_loser].ppa += lPPA - wPPA;
         //printf("OMG PLAYER FOUND IN BUFFER\n");
+        //printf("PPA: %f\n", buffer->players[find_winner].ppa);
     } else {
         printf("Warning: Player not found. Winner: %s, Loser: %s\n", winner_name, loser_name);
     }
@@ -260,10 +307,7 @@ void calculate_ppa_for_basket()
 
 void calculate_max_points_for_football(SharedBuffer *buffer, char *filename, char *data)
 {
-    if(strncmp(filename, "data/football/atp_rankings", 26) != 0) { // already processed players in producer
-        return;
-    }
-
+    (void)filename;
     char *p=strtok(data, ",");
     int i=0;
     int p_id = 0;
@@ -284,18 +328,21 @@ void calculate_max_points_for_football(SharedBuffer *buffer, char *filename, cha
         buffer->players[find_player].points += p_points;
         if(buffer->players[find_player].points > buffer->player_with_max_points.points) {
             buffer->player_with_max_points = buffer->players[find_player];
+            player_max = buffer->players[find_player];
+            // printf("Player with max points at football: %s %s, Points: %d\n",
+            //     player_max.name_first,
+            //     player_max.name_last,
+            //     player_max.points);
         }
     } else {
         printf("Warning: Player not found when calc max points for football. Player ID: %d\n", p_id);
     }
+
 }
 
 void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char *data)
 {
-    if(strncmp(filename, "data/tennis/atp_rankings", 26) != 0) { // already processed players in producer
-        return;
-    }
-
+    (void)filename;
     char *p=strtok(data, ",");
     int i=0;
     int p_id = 0;
@@ -316,6 +363,7 @@ void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char 
         buffer->players[find_player].points += p_points;
         if(buffer->players[find_player].points > buffer->player_with_max_points.points) {
             buffer->player_with_max_points = buffer->players[find_player];
+            player_max = buffer->players[find_player];
         }
     } else {
         printf("Warning: Player not found when calc max points for tennis. Player ID: %d\n", p_id);
@@ -327,22 +375,16 @@ void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char 
 //////////////////////////////////////////////////////////// HELPER FUNCTIONS ////////////////////////////////////////////////////////////
 
 void calculate_ppa(SharedBuffer *buffer, char* filename, char* data) {
-    // printf("Calculating PPA for: %s\n", data);
     calculate_ppa_for_football(buffer, filename, data);
     calculate_ppa_for_tennis(buffer, filename, data);
 }
 
 void find_max_points(SharedBuffer *buffer, char* filename, char* data) {
-    // printf("Finding max points for: %s\n", data);
-    calculate_max_points_for_football(buffer, filename, data);
-    if(buffer->finished_reading_football) {
-        printf("Player with max points at football: %s %s, Points: %d\n", buffer->player_with_max_points.name_first, buffer->player_with_max_points.name_last, buffer->player_with_max_points.points);
-        buffer->finished_reading_football = false;
+    if(strncmp(filename, "data/tennis/atp_rankings", 26) == 0) {
+        calculate_max_points_for_tennis(buffer, filename, data);
     }
-    calculate_max_points_for_tennis(buffer, filename, data);
-    if(buffer->finished_reading_tennis) {
-        printf("Player with max points at tennis: %s %s, Points: %d\n", buffer->player_with_max_points.name_first, buffer->player_with_max_points.name_last, buffer->player_with_max_points.points);
-        buffer->finished_reading_tennis = false;
+    else if(strncmp(filename, "data/football/atp_rankings", 26) == 0) { 
+        calculate_max_points_for_football(buffer, filename, data);
     }
 }
 

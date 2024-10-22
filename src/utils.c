@@ -22,6 +22,9 @@ void init_buffer(SharedBuffer* buffer, int size) {
     pthread_mutex_init(&buffer->mutex, NULL);
     pthread_cond_init(&buffer->not_full, NULL);
     pthread_cond_init(&buffer->not_empty, NULL);
+
+    pthread_cond_init(&buffer->football_done, NULL);
+    pthread_cond_init(&buffer->tennis_done, NULL);
 }
 
 void destroy_buffer(SharedBuffer* buffer) {
@@ -33,4 +36,7 @@ void destroy_buffer(SharedBuffer* buffer) {
     pthread_mutex_destroy(&buffer->mutex);
     pthread_cond_destroy(&buffer->not_full);
     pthread_cond_destroy(&buffer->not_empty);
+    
+    pthread_cond_destroy(&buffer->football_done);
+    pthread_cond_destroy(&buffer->tennis_done);
 }
