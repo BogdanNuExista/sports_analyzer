@@ -17,7 +17,6 @@ void calculate_ppa(SharedBuffer *buffer, char* filename, char *data);
 void find_max_points(SharedBuffer *buffer, char* filename, char* data);
 void generate_report();
 
-void* profiling_thread(void* arg);
-void generate_report_callback(SharedBuffer* buffer);
+void print_ppa_and_max_points(SharedBuffer *buffer);
 
 #endif // CONSUMER_H

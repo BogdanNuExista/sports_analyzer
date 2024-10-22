@@ -4,8 +4,6 @@
 #include "../include/consumer.h"
 #include "../include/utils.h"
 
-Player player_max;
-
 void* consumer_thread(void* arg) {
     ConsumerArgs* args = (ConsumerArgs*)arg;
     SharedBuffer* buffer = args->buffer;
@@ -36,29 +34,12 @@ void* consumer_thread(void* arg) {
             case 1:
                 find_max_points(buffer, filename, data);
                 break;
+            case 2:
+                //print_ppa_and_max_points(buffer);
+                break;
         }
 
 
-
-
-        // Wait for football data to be processed if needed
-        // if (consumer_id == 1) {
-        //     pthread_mutex_lock(&buffer->mutex);
-        //     pthread_cond_wait(&buffer->football_done, &buffer->mutex);  // Wait for the football signal
-        //     printf("Player with max points at football: %s %s, Points: %d\n",
-        //         player_max.name_first,
-        //         player_max.name_last,
-        //         player_max.points);     
-        //     pthread_mutex_unlock(&buffer->mutex);
-
-        //     pthread_mutex_lock(&buffer->mutex);
-        //     pthread_cond_wait(&buffer->tennis_done, &buffer->mutex);  // Wait for the tennis signal
-        //     printf("Player with max points at tennis: %s %s, Points: %d\n",
-        //         player_max.name_first,
-        //         player_max.name_last,
-        //         player_max.points); 
-        //     pthread_mutex_unlock(&buffer->mutex);
-        // }
     }
 
     free(arg);
@@ -83,8 +64,8 @@ void* consumer_thread(void* arg) {
 //////////////////////////////////////////////////////////// HELPER FUNCTIONS ////////////////////////////////////////////////////////////
 
 void print_buffer_players(SharedBuffer *buffer) {
-    for (int i = 0; i < 10; i++) {
-        printf("Player: %s %s and PPA: %f\n", buffer->players[i].name_first, buffer->players[i].name_last, buffer->players[i].ppa);
+    for (int i = 5000; i < 6000; i++) {
+        printf("Player: %s %s on index %d, PPA: %f\n", buffer->players[i].name_first, buffer->players[i].name_last, i, buffer->players[i].ppa);
     }
 }
 
@@ -185,26 +166,31 @@ void calculate_ppa_for_football(SharedBuffer *buffer, char* filename, char* data
     winner_name[strcspn(winner_name, "\r\n")] = 0;
     loser_name[strcspn(loser_name, "\r\n")] = 0;
 
-    //printf("Winner: %s, Loser: %s - w_ace: %d, w_df: %d, w_svpt: %d, w_1stWon: %d, w_2ndWon: %d, l_ace: %d, l_df: %d, l_svpt: %d, l_1stWon: %d, l_2ndWon: %d\n", winner_name, loser_name, w_ace, w_df, w_svpt, w_1stWon, w_2ndWon, l_ace, l_df, l_svpt, l_1stWon, l_2ndWon);
-
     if(w_svpt == 0 || l_svpt == 0) {
         return;
     }
 
-    double wPPA = (double)(w_ace - w_df + w_1stWon + w_2ndWon) / w_svpt;
-    double lPPA = (double)(l_ace - l_df + l_1stWon + l_2ndWon) / l_svpt;
+    //printf("Winner: %s, Loser: %s - w_ace: %d, w_df: %d, w_svpt: %d, w_1stWon: %d, w_2ndWon: %d, l_ace: %d, l_df: %d, l_svpt: %d, l_1stWon: %d, l_2ndWon: %d\n", winner_name, loser_name, w_ace, w_df, w_svpt, w_1stWon, w_2ndWon, l_ace, l_df, l_svpt, l_1stWon, l_2ndWon);
+
+    double wPPA = (double)(w_ace + w_df + w_1stWon + w_2ndWon) / w_svpt;
+    double lPPA = (double)(l_ace + l_df + l_1stWon + l_2ndWon) / l_svpt;
+
+    pthread_mutex_lock(&buffer->mutex);
 
     int find_winner = find_player_by_id(buffer->players, buffer->player_count, winner_id);
     int find_loser = find_player_by_id(buffer->players, buffer->player_count, loser_id);
 
     if (find_winner != -1 && find_loser != -1) {
-        buffer->players[find_winner].ppa += wPPA - lPPA;
-        buffer->players[find_loser].ppa += lPPA - wPPA;
-        //printf("PPA: %f\n", buffer->players[find_winner].ppa);
+        buffer->players[find_winner].ppa += wPPA;
+        buffer->players[find_loser].ppa += lPPA;
+
+        //printf("Max ppa for football: %f\n", buffer->players[find_winner].ppa);
         //printf("OMG PLAYER FOUND IN BUFFER\n");
     } else {
         printf("Warning: Player not found. Winner: %s, Loser: %s\n", winner_name, loser_name);
     }
+
+    pthread_mutex_unlock(&buffer->mutex);
 
     // can use fprintf to write the ppa for each player to a file
 }
@@ -287,6 +273,8 @@ void calculate_ppa_for_tennis(SharedBuffer *buffer, char* filename, char* data) 
     double wPPA = (double)(w_ace - w_df + w_1stWon + w_2ndWon) / w_svpt;
     double lPPA = (double)(l_ace - l_df + l_1stWon + l_2ndWon) / l_svpt;
 
+    pthread_mutex_lock(&buffer->mutex);
+
     int find_winner = find_player_by_id(buffer->players, buffer->player_count, winner_id);
     int find_loser = find_player_by_id(buffer->players, buffer->player_count, loser_id);
 
@@ -298,6 +286,8 @@ void calculate_ppa_for_tennis(SharedBuffer *buffer, char* filename, char* data) 
     } else {
         printf("Warning: Player not found. Winner: %s, Loser: %s\n", winner_name, loser_name);
     }
+
+    pthread_mutex_unlock(&buffer->mutex);
 }
 
 void calculate_ppa_for_basket()
@@ -323,21 +313,17 @@ void calculate_max_points_for_football(SharedBuffer *buffer, char *filename, cha
         i++;
     }
 
+    pthread_mutex_lock(&buffer->mutex); 
     int find_player = find_player_by_id(buffer->players, buffer->player_count, p_id);
     if (find_player != -1) {
         buffer->players[find_player].points += p_points;
-        if(buffer->players[find_player].points > buffer->player_with_max_points.points) {
-            buffer->player_with_max_points = buffer->players[find_player];
-            player_max = buffer->players[find_player];
-            // printf("Player with max points at football: %s %s, Points: %d\n",
-            //     player_max.name_first,
-            //     player_max.name_last,
-            //     player_max.points);
+        if(buffer->players[find_player].points > buffer->player_with_max_points_football.points) {
+            buffer->player_with_max_points_football = buffer->players[find_player];
         }
     } else {
         printf("Warning: Player not found when calc max points for football. Player ID: %d\n", p_id);
     }
-
+    pthread_mutex_unlock(&buffer->mutex);
 }
 
 void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char *data)
@@ -358,16 +344,17 @@ void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char 
         i++;
     }
 
+    pthread_mutex_lock(&buffer->mutex); 
     int find_player = find_player_by_id(buffer->players, buffer->player_count, p_id);
     if (find_player != -1) {
         buffer->players[find_player].points += p_points;
-        if(buffer->players[find_player].points > buffer->player_with_max_points.points) {
-            buffer->player_with_max_points = buffer->players[find_player];
-            player_max = buffer->players[find_player];
+        if(buffer->players[find_player].points > buffer->player_with_max_points_tennis.points) {
+            buffer->player_with_max_points_tennis = buffer->players[find_player];
         }
     } else {
         printf("Warning: Player not found when calc max points for tennis. Player ID: %d\n", p_id);
     }
+    pthread_mutex_unlock(&buffer->mutex);
 }
 
 
@@ -403,4 +390,22 @@ void generate_report() {
         }
     }
     */
+}
+
+
+void print_ppa_and_max_points(SharedBuffer *buffer)
+{
+    printf("Player Production Average (PPA) Report:\n");
+    printf("---------------------------------------\n");
+    for (int i = 0; i < buffer->player_count; i+=1000) { // print every 1000th player
+        if (buffer->players[i].ppa != 0) {
+            printf("Player: %s %s\n", buffer->players[i].name_first, buffer->players[i].name_last);
+            printf("PPA: %.4f\n", buffer->players[i].ppa);
+            printf("Points: %d\n", buffer->players[i].points);
+            printf("---------------------------------------\n");
+        }
+    }
+
+    printf("Player with max points in football: %s %s, points: %d\n", buffer->player_with_max_points_football.name_first, buffer->player_with_max_points_football.name_last, buffer->player_with_max_points_football.points);
+    printf("Player with max points in tennis: %s %s, points: %d\n", buffer->player_with_max_points_tennis.name_first, buffer->player_with_max_points_tennis.name_last, buffer->player_with_max_points_tennis.points);
 }

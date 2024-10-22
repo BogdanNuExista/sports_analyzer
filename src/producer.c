@@ -180,10 +180,6 @@ void* producer_thread(void* arg) {
 
     printf("Producer %d finished processing all football CSV files.\n", producer_id);
 
-    pthread_mutex_lock(&buffer->mutex);
-    pthread_cond_signal(&buffer->football_done);  // Signal that football players are read into the buffer and we can print the max points
-    pthread_mutex_unlock(&buffer->mutex);
-
     buffer->player_count = 0;
     read_tennis_players_in_shared_buffer(buffer);
 
@@ -191,10 +187,6 @@ void* producer_thread(void* arg) {
     search_csv_files(data_dir, buffer);
 
     printf("Producer %d finished processing all tennis CSV files.\n", producer_id);
-
-    pthread_mutex_lock(&buffer->mutex);
-    pthread_cond_signal(&buffer->tennis_done);  // Signal that tennis data reading is complete
-    pthread_mutex_unlock(&buffer->mutex);
     
     printf("Producer %d finished processing all CSV files.\n", producer_id);
 

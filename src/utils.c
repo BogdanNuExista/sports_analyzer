@@ -9,10 +9,8 @@ void init_buffer(SharedBuffer* buffer, int size) {
 
     buffer->players = (Player*)malloc(66000 * sizeof(Player));
 
-    buffer->player_with_max_points.points = 0;
-    buffer->finished_reading_football = false;
-    buffer->finished_reading_tennis = false;
-    buffer->finished_reading_basketball = false;
+    buffer->player_with_max_points_football.points = 0;
+    buffer->player_with_max_points_tennis.points = 0;
 
     buffer->size = size;
     buffer->in = 0;
@@ -23,8 +21,8 @@ void init_buffer(SharedBuffer* buffer, int size) {
     pthread_cond_init(&buffer->not_full, NULL);
     pthread_cond_init(&buffer->not_empty, NULL);
 
-    pthread_cond_init(&buffer->football_done, NULL);
-    pthread_cond_init(&buffer->tennis_done, NULL);
+    pthread_cond_init(&buffer->done_reading, NULL);
+
 }
 
 void destroy_buffer(SharedBuffer* buffer) {
@@ -37,6 +35,5 @@ void destroy_buffer(SharedBuffer* buffer) {
     pthread_cond_destroy(&buffer->not_full);
     pthread_cond_destroy(&buffer->not_empty);
     
-    pthread_cond_destroy(&buffer->football_done);
-    pthread_cond_destroy(&buffer->tennis_done);
+    pthread_cond_destroy(&buffer->done_reading);
 }

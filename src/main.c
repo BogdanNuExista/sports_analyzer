@@ -25,7 +25,7 @@ int main() {
     }
 
     // Create consumer threads
-    for (int i = 0; i < NUM_CONSUMERS-1; i++) {
+    for (int i = 0; i < NUM_CONSUMERS; i++) {
         ConsumerArgs* args = malloc(sizeof(ConsumerArgs));
         args->buffer = &buffer;
         args->consumer_id = i;

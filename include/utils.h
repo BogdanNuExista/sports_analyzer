@@ -22,18 +22,14 @@ typedef struct {
     int count;
     char filename[1024];
     Player *players;
-    Player player_with_max_points;
+    Player player_with_max_points_tennis;
+    Player player_with_max_points_football;
     int player_count;
-
-    bool finished_reading_football;
-    bool finished_reading_tennis;
-    bool finished_reading_basketball;
 
     pthread_mutex_t mutex;
     pthread_cond_t not_full;
     pthread_cond_t not_empty;
-    pthread_cond_t football_done;
-    pthread_cond_t tennis_done;
+    pthread_cond_t done_reading;
 } SharedBuffer;
 
 typedef struct {
