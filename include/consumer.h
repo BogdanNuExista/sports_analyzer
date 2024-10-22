@@ -9,7 +9,6 @@ typedef struct {
     SharedBuffer* buffer;
     int consumer_id;
     ReportCallback callback;
-    ProfileData* profile_data;
 } ConsumerArgs;
 
 void* consumer_thread(void* arg);

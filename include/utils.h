@@ -14,6 +14,8 @@ typedef struct {
     double ppa; // PPA = wPPA - lPPA
 } Player;
 
+typedef void (*TaskCompletionCallback)(void* result);
+
 typedef struct {
     char** data;
     int size;
@@ -30,13 +32,26 @@ typedef struct {
     pthread_cond_t not_full;
     pthread_cond_t not_empty;
     pthread_cond_t done_reading;
+
+    bool all_data_processed;
+    int active_consumers;
+    pthread_mutex_t completion_mutex;
+    pthread_cond_t all_done;
 } SharedBuffer;
 
 typedef struct {
+    double start_time;
     double cpu_usage;
     size_t memory_usage;
-    double execution_time;
-} ProfileData;
+    pthread_mutex_t profile_mutex;
+} ProfileInfo;
+
+typedef struct {
+    SharedBuffer* buffer;
+    int thread_id;
+    TaskCompletionCallback callback;
+    ProfileInfo* profile_info;
+} ThreadArgs;
 
 void init_buffer(SharedBuffer* buffer, int size);
 void destroy_buffer(SharedBuffer* buffer);

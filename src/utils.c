@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include "../include/utils.h"
+#include <string.h>
+
 
 void init_buffer(SharedBuffer* buffer, int size) {
     buffer->data = (char**)malloc(size * sizeof(char*));
@@ -9,19 +11,23 @@ void init_buffer(SharedBuffer* buffer, int size) {
 
     buffer->players = (Player*)malloc(66000 * sizeof(Player));
 
-    buffer->player_with_max_points_football.points = 0;
-    buffer->player_with_max_points_tennis.points = 0;
+    memset(&buffer->player_with_max_points_tennis, 0, sizeof(Player));
+    memset(&buffer->player_with_max_points_football, 0, sizeof(Player));
 
     buffer->size = size;
     buffer->in = 0;
     buffer->out = 0;
     buffer->count = 0;
     buffer->player_count = 0; 
+    buffer->all_data_processed = false;
+    buffer->active_consumers = 0;
+
     pthread_mutex_init(&buffer->mutex, NULL);
+    pthread_mutex_init(&buffer->completion_mutex, NULL);
     pthread_cond_init(&buffer->not_full, NULL);
     pthread_cond_init(&buffer->not_empty, NULL);
 
-    pthread_cond_init(&buffer->done_reading, NULL);
+    pthread_cond_init(&buffer->all_done, NULL);
 
 }
 
@@ -32,8 +38,9 @@ void destroy_buffer(SharedBuffer* buffer) {
     free(buffer->data);
     free(buffer->players);
     pthread_mutex_destroy(&buffer->mutex);
+    pthread_mutex_destroy(&buffer->completion_mutex);
     pthread_cond_destroy(&buffer->not_full);
     pthread_cond_destroy(&buffer->not_empty);
     
-    pthread_cond_destroy(&buffer->done_reading);
+    pthread_cond_destroy(&buffer->all_done);
 }
