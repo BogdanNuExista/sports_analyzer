@@ -42,8 +42,9 @@ void process_csv_file(const char* file_path, SharedBuffer* buffer) {
             }
         }
         
-        strcpy(buffer->data[buffer->in], line);
-        strcpy(buffer->filename, file_path);
+        strcpy(buffer->entries[buffer->in].data, line);
+        strcpy(buffer->entries[buffer->in].filename, file_path);
+
         buffer->in = (buffer->in + 1) % buffer->size;
         buffer->count++;
         
@@ -77,8 +78,12 @@ void search_csv_files(const char* dir_path, SharedBuffer* buffer) {
         } else {
             size_t len = strlen(entry->d_name);
             if (len > 4 && strcmp(entry->d_name + len - 4, ".csv") == 0) {
+                
+                if(strstr(path, "atp_players") != NULL) { // already processed players in producer
+                    continue;
+                }
 
-                strcpy(buffer->filename, path);
+                strcpy(buffer->entries[buffer->in].filename, path);
                 
                 process_csv_file(path, buffer);
             }

@@ -49,9 +49,6 @@ int main() {
         pthread_join(consumers[i], NULL);
     }
 
-    // Print final results
-    print_ppa_and_max_points(&buffer);
-
     // Clean up
     destroy_buffer(&buffer);
 

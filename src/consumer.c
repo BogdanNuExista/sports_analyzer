@@ -54,8 +54,8 @@ void* consumer_thread(void* arg) {
             continue;
         }
 
-        strcpy(data, buffer->data[buffer->out]);
-        strcpy(filename, buffer->filename);
+        strcpy(data, buffer->entries[buffer->out].data);
+        strcpy(filename, buffer->entries[buffer->out].filename);
         buffer->out = (buffer->out + 1) % buffer->size;
         buffer->count--;
         
@@ -302,7 +302,7 @@ void calculate_ppa_for_tennis(SharedBuffer *buffer, char* filename, char* data) 
     winner_name[strcspn(winner_name, "\r\n")] = 0;
     loser_name[strcspn(loser_name, "\r\n")] = 0;
 
-    //printf("Winner: %s, Loser: %s - w_ace: %d, w_df: %d, w_svpt: %d, w_1stWon: %d, w_2ndWon: %d, l_ace: %d, l_df: %d, l_svpt: %d, l_1stWon: %d, l_2ndWon: %d\n", winner_name, loser_name, w_ace, w_df, w_svpt, w_1stWon, w_2ndWon, l_ace, l_df, l_svpt, l_1stWon, l_2ndWon);
+    //printf("Winner: %s, Loser: %s, File_name %s, data %s", winner_name, loser_name, filename, data);
 
     if(w_svpt == 0 || l_svpt == 0) {
         return;
@@ -400,7 +400,7 @@ void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char 
 //////////////////////////////////////////////////////////// HELPER FUNCTIONS ////////////////////////////////////////////////////////////
 
 void find_max_points(SharedBuffer *buffer, char* filename, char* data) {
-    if(strncmp(filename, "data/tennis/atp_rankings", 26) == 0) {
+    if(strncmp(filename, "data/tennis/atp_rankings", 24) == 0) {
         calculate_max_points_for_tennis(buffer, filename, data);
     }
     else if(strncmp(filename, "data/football/atp_rankings", 26) == 0) { 

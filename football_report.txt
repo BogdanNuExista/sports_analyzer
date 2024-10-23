@@ -1,14 +1,14 @@
 Football Results:
-Player with max points: Novak Djokovic, points: 4134834
+Player with max points: Novak Djokovic, points: 4276302
 
 Top 10 PPA Players:
-1. Ivo Karlovic - PPA: 6135.7662
-2. Adrian Mannarino - PPA: 5906.2634
-3. Feliciano Lopez - PPA: 5696.5235
-4. Marius Copil - PPA: 5216.6855
-5. Evgeny Donskoy - PPA: 5185.6942
-6. Andreas Seppi - PPA: 5048.9334
-7. Benoit Paire - PPA: 5047.8759
-8. Vasek Pospisil - PPA: 4957.1805
-9. Teymuraz Gabashvili - PPA: 4955.7206
-10. Andrea Arnaboldi - PPA: 4932.9497
+1. Feliciano Lopez - PPA: 5613.6287
+2. Fernando Verdasco - PPA: 5388.9977
+3. Sergiy Stakhovsky - PPA: 5102.0857
+4. Adrian Mannarino - PPA: 4997.6841
+5. Tommy Robredo - PPA: 4942.6841
+6. Ivo Karlovic - PPA: 4886.3552
+7. Evgeny Donskoy - PPA: 4866.9968
+8. Andreas Seppi - PPA: 4819.7462
+9. Jan Lennard Struff - PPA: 4816.9526
+10. Philipp Kohlschreiber - PPA: 4758.3384

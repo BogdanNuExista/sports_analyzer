@@ -5,6 +5,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+typedef struct {
+    char data[1024];
+    char filename[1024];
+} BufferEntry;
+
 typedef enum {
     PHASE_FOOTBALL,
     PHASE_TENNIS,
@@ -24,7 +29,7 @@ typedef struct {
 typedef void (*TaskCompletionCallback)(void* result);
 
 typedef struct {
-    char** data;
+    BufferEntry* entries;
     int size;
     int in;
     int out;

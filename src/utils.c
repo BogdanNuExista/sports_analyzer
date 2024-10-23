@@ -5,10 +5,8 @@
 
 
 void init_buffer(SharedBuffer* buffer, int size) {
-    buffer->data = (char**)malloc(size * sizeof(char*));
-    for (int i = 0; i < size; i++) {
-        buffer->data[i] = (char*)malloc(1024 * sizeof(char));
-    }
+    
+    buffer->entries = (BufferEntry*)malloc(size * sizeof(BufferEntry));
 
     buffer->players = (Player*)malloc(66000 * sizeof(Player));
 
@@ -40,10 +38,8 @@ void init_buffer(SharedBuffer* buffer, int size) {
 }
 
 void destroy_buffer(SharedBuffer* buffer) {
-    for (int i = 0; i < buffer->size; i++) {
-        free(buffer->data[i]);
-    }
-    free(buffer->data);
+    
+    free(buffer->entries);
     free(buffer->players);
     pthread_mutex_destroy(&buffer->mutex);
     pthread_mutex_destroy(&buffer->completion_mutex);
