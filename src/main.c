@@ -32,13 +32,25 @@ int main() {
         pthread_create(&consumers[i], NULL, consumer_thread, args);
     }
 
-    // Wait for all threads to complete
+    // Wait for producers to complete
     for (int i = 0; i < NUM_PRODUCERS; i++) {
         pthread_join(producers[i], NULL);
     }
+
+    // Wait for all consumers to finish
+    pthread_mutex_lock(&buffer.completion_mutex);
+    while (buffer.active_consumers > 0) {
+        pthread_cond_wait(&buffer.all_done, &buffer.completion_mutex);
+    }
+    pthread_mutex_unlock(&buffer.completion_mutex);
+
+    // Now safe to join consumer threads
     for (int i = 0; i < NUM_CONSUMERS; i++) {
         pthread_join(consumers[i], NULL);
     }
+
+    // Print final results
+    print_ppa_and_max_points(&buffer);
 
     // Clean up
     destroy_buffer(&buffer);

@@ -9,16 +9,51 @@ void* consumer_thread(void* arg) {
     ConsumerArgs* args = (ConsumerArgs*)arg;
     SharedBuffer* buffer = args->buffer;
     int consumer_id = args->consumer_id;
+    ProcessingPhase current_phase = PHASE_FOOTBALL;
 
-    while (1) {
+    pthread_mutex_lock(&buffer->completion_mutex);
+    buffer->active_consumers++;
+    pthread_mutex_unlock(&buffer->completion_mutex);
+
+    while (current_phase != PHASE_DONE) {
         char data[1024];
         char filename[1024];
         
         pthread_mutex_lock(&buffer->mutex);
-        while (buffer->count == 0) {
+        
+        while (buffer->count == 0 && !buffer->phase_data_processed) {
             pthread_cond_wait(&buffer->not_empty, &buffer->mutex);
         }
         
+        // Check if current phase is done
+        if (buffer->count == 0 && buffer->phase_data_processed) {
+            pthread_mutex_unlock(&buffer->mutex);
+            
+            // Signal phase completion
+            pthread_mutex_lock(&buffer->completion_mutex);
+            buffer->active_consumers--;
+            if (buffer->active_consumers == 0) {
+                pthread_cond_signal(&buffer->all_done);
+            }
+            pthread_mutex_unlock(&buffer->completion_mutex);
+            
+            // Wait for next phase
+            pthread_mutex_lock(&buffer->phase_mutex);
+            while (current_phase == buffer->current_phase && 
+                   buffer->current_phase != PHASE_DONE) {
+                pthread_cond_wait(&buffer->phase_change, &buffer->phase_mutex);
+            }
+            current_phase = buffer->current_phase;
+            pthread_mutex_unlock(&buffer->phase_mutex);
+            
+            if (current_phase != PHASE_DONE) {
+                pthread_mutex_lock(&buffer->completion_mutex);
+                buffer->active_consumers++;
+                pthread_mutex_unlock(&buffer->completion_mutex);
+            }
+            continue;
+        }
+
         strcpy(data, buffer->data[buffer->out]);
         strcpy(filename, buffer->filename);
         buffer->out = (buffer->out + 1) % buffer->size;
@@ -27,17 +62,22 @@ void* consumer_thread(void* arg) {
         pthread_cond_signal(&buffer->not_full);
         pthread_mutex_unlock(&buffer->mutex);
 
-
-        switch (consumer_id) {
-            case 0:
-                calculate_ppa(buffer, filename, data);
-                break;
-            case 1:
-                find_max_points(buffer, filename, data);
-                break;
+        // Process according to current phase
+        if (current_phase == PHASE_FOOTBALL) {
+            if (strncmp(filename, "data/football", 13) == 0) {
+                switch (consumer_id) {
+                    case 0: calculate_ppa_for_football(buffer, filename, data); break;
+                    case 1: find_max_points(buffer, filename, data); break;
+                }
+            }
+        } else if (current_phase == PHASE_TENNIS) {
+            if (strncmp(filename, "data/tennis", 11) == 0) {
+                switch (consumer_id) {
+                    case 0: calculate_ppa_for_tennis(buffer, filename, data); break;
+                    case 1: find_max_points(buffer, filename, data); break;
+                }
+            }
         }
-
-
     }
 
     free(arg);

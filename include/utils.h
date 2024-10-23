@@ -3,6 +3,13 @@
 
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdio.h>
+
+typedef enum {
+    PHASE_FOOTBALL,
+    PHASE_TENNIS,
+    PHASE_DONE
+} ProcessingPhase;
 
 typedef struct {
     int player_id;
@@ -33,6 +40,11 @@ typedef struct {
     pthread_cond_t not_empty;
     pthread_cond_t done_reading;
 
+    ProcessingPhase current_phase;
+    bool phase_data_processed;
+    pthread_mutex_t phase_mutex;
+    pthread_cond_t phase_change;
+
     bool all_data_processed;
     int active_consumers;
     pthread_mutex_t completion_mutex;
@@ -55,6 +67,6 @@ typedef struct {
 
 void init_buffer(SharedBuffer* buffer, int size);
 void destroy_buffer(SharedBuffer* buffer);
-
+void print_top_ppa_players(SharedBuffer* buffer, FILE* file, bool is_football);
 
 #endif // UTILS_H
