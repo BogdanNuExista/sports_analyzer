@@ -187,7 +187,7 @@ void read_tennis_players_in_shared_buffer(SharedBuffer *buffer)
 void* producer_thread(void* arg) {
     ProducerArgs* args = (ProducerArgs*)arg;
     SharedBuffer* buffer = args->buffer;
-    int producer_id = args->producer_id;
+    //int producer_id = args->producer_id;
     FILE *football_report, *tennis_report;
 
     // Phase 1: Football processing

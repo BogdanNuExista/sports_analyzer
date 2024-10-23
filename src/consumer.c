@@ -399,11 +399,6 @@ void calculate_max_points_for_tennis(SharedBuffer *buffer, char *filename, char 
 
 //////////////////////////////////////////////////////////// HELPER FUNCTIONS ////////////////////////////////////////////////////////////
 
-void calculate_ppa(SharedBuffer *buffer, char* filename, char* data) {
-    calculate_ppa_for_football(buffer, filename, data);
-    calculate_ppa_for_tennis(buffer, filename, data);
-}
-
 void find_max_points(SharedBuffer *buffer, char* filename, char* data) {
     if(strncmp(filename, "data/tennis/atp_rankings", 26) == 0) {
         calculate_max_points_for_tennis(buffer, filename, data);

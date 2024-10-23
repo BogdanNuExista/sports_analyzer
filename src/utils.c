@@ -56,6 +56,7 @@ void destroy_buffer(SharedBuffer* buffer) {
 
 
 void print_top_ppa_players(SharedBuffer* buffer, FILE* file, bool is_football) {
+    (void)is_football;
     // Create temporary array of player pointers for sorting
     Player** players = malloc(buffer->player_count * sizeof(Player*));
     int valid_count = 0;
