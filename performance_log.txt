@@ -1138,3 +1138,27 @@ Sample 13:
 CPU Usage: 8.67%
 Memory Usage: 19628 KB
 ------------------------
+Sample 14:
+CPU Usage: 8.62%
+Memory Usage: 19628 KB
+------------------------
+Sample 15:
+CPU Usage: 7.21%
+Memory Usage: 21476 KB
+------------------------
+Sample 16:
+CPU Usage: 7.45%
+Memory Usage: 21476 KB
+------------------------
+Sample 17:
+CPU Usage: 6.86%
+Memory Usage: 21476 KB
+------------------------
+Sample 18:
+CPU Usage: 5.93%
+Memory Usage: 21476 KB
+------------------------
+Sample 19:
+CPU Usage: 5.61%
+Memory Usage: 21476 KB
+------------------------
