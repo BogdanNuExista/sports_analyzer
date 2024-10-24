@@ -1,14 +1,14 @@
 Tennis Results:
-Player with max points: Novak Djokovic, points: 4835778
+Player with max points: Novak Djokovic, points: 4293947
 
 Top 10 PPA Players:
-1. Kaichi Uchida - PPA: 2114.8665
-2. Andrea Arnaboldi - PPA: 1523.1200
-3. Gonzalo Villanueva - PPA: 1430.8957
-4. Aldin Setkic - PPA: 1315.9074
-5. Guillermo Garcia Lopez - PPA: 1265.7564
-6. Lorenzo Giustino - PPA: 1128.0011
-7. Geoffrey Blancaneaux - PPA: 1063.4441
-8. Florent Serra - PPA: 1058.8493
-9. Andrea Collarini - PPA: 997.6139
-10. Tomislav Brkic - PPA: 980.3584
+1. Daniel Vacek - PPA: 1382.2042
+2. Kaichi Uchida - PPA: 1381.7205
+3. Ramkumar Ramanathan - PPA: 1186.1940
+4. Nikoloz Basilashvili - PPA: 1181.8661
+5. Tsung Hua Yang - PPA: 1125.1542
+6. Aldin Setkic - PPA: 1094.7907
+7. Ivan Navarro - PPA: 1074.2282
+8. Albert Montanes - PPA: 1036.9821
+9. Gonzalo Villanueva - PPA: 989.8772
+10. Matteo Viola - PPA: 955.5215

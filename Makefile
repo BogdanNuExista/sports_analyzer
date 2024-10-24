@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -pthread -I./include -g
-SRCS = src/main.c src/producer.c src/consumer.c src/utils.c
+SRCS = src/main.c src/producer.c src/consumer.c src/utils.c src/profiling.c
 OBJS = $(SRCS:src/%.c=obj/%.o)
 TARGET = sports_analyzer
 

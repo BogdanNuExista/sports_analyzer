@@ -4,6 +4,7 @@
 #include "../include/producer.h"
 #include "../include/consumer.h"
 #include "../include/utils.h"
+#include "../include/profiling.h"
 
 #define NUM_PRODUCERS 1
 #define NUM_CONSUMERS 2
@@ -12,9 +13,14 @@
 int main() {
     pthread_t producers[NUM_PRODUCERS];
     pthread_t consumers[NUM_CONSUMERS];
+    pthread_t profiler_thread_id;
+
+
     
     SharedBuffer buffer;
     init_buffer(&buffer, BUFFER_SIZE);
+
+    pthread_create(&profiler_thread_id, NULL, profiling_thread, &buffer);
 
     // Create producer threads
     for (int i = 0; i < NUM_PRODUCERS; i++) {
@@ -48,6 +54,8 @@ int main() {
     for (int i = 0; i < NUM_CONSUMERS; i++) {
         pthread_join(consumers[i], NULL);
     }
+
+    pthread_join(profiler_thread_id, NULL);
 
     // Clean up
     destroy_buffer(&buffer);
