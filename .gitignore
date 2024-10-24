@@ -3,5 +3,5 @@ build
 sports_analyzer
 /data
 /obj
-tennis_report
-football_report
+football_report.txt
+tennis_report.txt
