@@ -1086,3 +1086,55 @@ Sample 272:
 CPU Usage: 0.15%
 Memory Usage: 20760 KB
 ------------------------
+Sample 1:
+CPU Usage: 100.00%
+Memory Usage: 1224 KB
+------------------------
+Sample 2:
+CPU Usage: 117.70%
+Memory Usage: 19628 KB
+------------------------
+Sample 3:
+CPU Usage: 50.32%
+Memory Usage: 19628 KB
+------------------------
+Sample 4:
+CPU Usage: 33.76%
+Memory Usage: 19628 KB
+------------------------
+Sample 5:
+CPU Usage: 25.85%
+Memory Usage: 19628 KB
+------------------------
+Sample 6:
+CPU Usage: 22.03%
+Memory Usage: 19628 KB
+------------------------
+Sample 7:
+CPU Usage: 18.16%
+Memory Usage: 19628 KB
+------------------------
+Sample 8:
+CPU Usage: 16.54%
+Memory Usage: 19628 KB
+------------------------
+Sample 9:
+CPU Usage: 13.43%
+Memory Usage: 19628 KB
+------------------------
+Sample 10:
+CPU Usage: 11.27%
+Memory Usage: 19628 KB
+------------------------
+Sample 11:
+CPU Usage: 10.19%
+Memory Usage: 19628 KB
+------------------------
+Sample 12:
+CPU Usage: 9.49%
+Memory Usage: 19628 KB
+------------------------
+Sample 13:
+CPU Usage: 8.67%
+Memory Usage: 19628 KB
+------------------------
